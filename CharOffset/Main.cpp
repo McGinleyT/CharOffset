@@ -8,12 +8,14 @@ using namespace std;
 
 char character(char start, int offset);
 
+//MAIN------------------------------------------------------------------------------------------
+/*	Driver for character() allowing 5 test cases before ending. */
 int main()
 {
-	char startChar = 'A';
+	char startChar = 'a';
 	int offsetNum = 1;
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		cout << "Enter a starting character: ";
 		cin >> startChar;
@@ -31,26 +33,27 @@ int main()
 			if (error == 1)
 				cout << startChar << " is not a letter.\n\n";
 			if (error == 2)
-				cout << "End letter out of bounds\n\n";
+				cout << "Endpoint out of bounds\n\n";
 		}
 	}
-
 
 	system("pause");
 	return 0;
 }
 
+//CHARACTER-------------------------------------------------------------------------------------
+/*	Uses ASCII values to offset characters. Converts all letters to lower case first for bounds
+*	detection, then offsets the character. Reverts to upper case if applicable and returns endpoint.
+*	Throws different exceptions for bad start character and bad endpoint characters.*/
 char character(char start, int offset)
 {
-	int invalidCharacterSelection = 1;
-	int invalidRangeException = 2;
+	const int INVALID_CHARACTER_SELECTION = 1;
+	int INVALID_RANGE_EXCEPTION = 2;
 	bool upper = false;
-	const int ASCII_LOW = 97, //a
-		ASCII_HIGH = 122; //z
 
 	if (!isalpha(start))
 	{
-		throw invalidCharacterSelection;
+		throw INVALID_CHARACTER_SELECTION;
 	}
 
 	if (isupper(start))	//converts start to lower, for bounds detection purposes
@@ -59,11 +62,16 @@ char character(char start, int offset)
 		start = (char)tolower(int(start));
 	}
 
-	char end = int(start) + offset; //offset movement
+	char end = int(start) + offset; //transition to endpoint
 
-	if (int(end) < ASCII_LOW || int(end) > ASCII_HIGH) //bounds detection
+	/*	Bounds detection: If not letter, out of bounds. Must also be lower case letter because
+	*	the letter was converted to lower case and upper-lower transitions not allowed. On ASCII
+	*	table, you can offset low enough to put endpoint in range of the upper case letters, so
+	*	if it's not lower it's out of bounds. ie. a-10 != W
+	*/
+	if (!isalpha(end) || !islower(end))
 	{
-		throw invalidRangeException;
+		throw INVALID_RANGE_EXCEPTION;
 	}
 
 	if (upper)	//return char to upper

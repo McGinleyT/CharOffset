@@ -61,15 +61,21 @@ char character(char start, int offset)
 		upper = true;
 		start = (char)tolower(int(start));
 	}
+	char end = (int(start) + offset); //transition to endpoint
 
-	char end = int(start) + offset; //transition to endpoint
-
-	/*	Bounds detection: If not letter, out of bounds. Must also be lower case letter because
-	*	the letter was converted to lower case and upper-lower transitions not allowed. On ASCII
-	*	table, you can offset low enough to put endpoint in range of the upper case letters, so
-	*	if it's not lower it's out of bounds. ie. a-10 != W
-	*/
-	if (!isalpha(end) || !islower(end))
+   /*	Bounds detection: If not letter, out of bounds. Must also be lower case letter because
+   *	the letter was converted to lower case and upper-lower transitions not allowed. On ASCII
+   *	table, you can offset low enough to put endpoint in range of the upper case letters, so
+   *	if it's not lower it's out of bounds. ie. a-10 != W
+   * 
+   *	If the ASCII value of endpoint is negative, out of bounds. Would throw error otherwise.
+   *	You could enter values to wrap all the way around ie. a+256=a, so the offset is checked.
+   *	If the absolute value of the offset is more than the ASCII value of the lower case start
+   *	character, it is out of bounds. I did this so I could avoid using a literal. The lower case
+   *	ASCII characters have values well beyond what would put you out of range which helps avoid
+   *	the number wrapping issue.
+   */
+	if (int(end) <0 || abs(offset) > int(start) || !isalpha(end) || !islower(end))
 	{
 		throw INVALID_RANGE_EXCEPTION;
 	}
